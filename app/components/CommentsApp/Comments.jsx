@@ -17,7 +17,6 @@ class Comments extends Component {
         />
       );
       const comments = this.state.comments.concat(commentItem);
-      console.log(comments)
       this.setState({
         comments,
         commentsCount: this.state.commentsCount + 1,
