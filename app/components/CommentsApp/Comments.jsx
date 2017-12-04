@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import Comment from './Comment/Comment';
 import CommentForm from './CommentForm/CommentForm';
+import { IconButton } from 'react-toolbox/lib/button';
 
 class Comments extends Component {
   state = {
     comments: [],
     commentsCount: 1,
+    showForm: false,
   };
 
 
@@ -22,14 +24,24 @@ class Comments extends Component {
         commentsCount: this.state.commentsCount + 1,
       });
     };
-
+    handleShowForm = () => {
+      this.setState({showForm: true})
+    }
+    handleCloseForm = () => {
+      this.setState({showForm: false})
+    }
     render() {
       return (
         <div>
           {this.state.comments}
-          <h1>Agregar comentario</h1>
+          <IconButton
+            icon="add"
+            onClick={this.handleShowForm}
+          />
           <CommentForm
+            active={this.state.showForm}
             createComment={this.createComment}
+            closeForm={this.handleCloseForm}
           />
         </div>
       );
