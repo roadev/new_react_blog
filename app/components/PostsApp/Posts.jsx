@@ -1,34 +1,54 @@
 import React, { Component } from 'react';
 import { Button } from 'react-toolbox/lib/button';
 import { findIndex, set } from 'lodash/fp';
-
+import { fromJS, List } from 'immutable';
 import Post from './Post/Post';
 import PostForm from './PostForm/PostForm';
+import { endpoints } from '../../constants';
 
 class Posts extends Component {
 
   state = {
-    posts: [],
-    postsCount: 1,
+    posts: List(),
     showForm: false,
     postToEdit: undefined,
   };
 
+  componentDidMount() {
+    this.getPosts();
+  }
+
+  async getPosts() {
+    console.log(endpoints.posts);
+    const response = await fetch(endpoints.posts);
+    const posts = await response.json();
+    this.setState({ posts: fromJS(posts) });
+    console.log(posts);
+  }
+
   createPost = (post) => {
-    const postItem = (
-      <Post
-        key={this.state.postsCount}
-        id={this.state.postsCount}
-        post={post}
-        editPost={this.handleEditPostForm}
-        deletePost={this.handleDeletePost}
-      />
-    );
-    const posts = this.state.posts.concat(postItem);
-    this.setState({
-      posts,
-      postsCount: this.state.postsCount + 1,
-    }, () => this.handleCloseForm());
+    fetch(endpoints.posts, {
+      method: 'POST',
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(post.toJS()),
+    });
+    // const postItem = (
+    //   <Post
+    //     key={this.state.postsCount}
+    //     id={this.state.postsCount}
+    //     post={post}
+    //     editPost={this.handleEditPostForm}
+    //     deletePost={this.handleDeletePost}
+    //   />
+    // );
+    // const posts = this.state.posts.concat(postItem);
+    // this.setState({
+    //   posts,
+    //   postsCount: this.state.postsCount + 1,
+    // }, () => this.handleCloseForm());
   };
 
   handleEditPost = (post) => {
@@ -84,17 +104,27 @@ class Posts extends Component {
 
   render() {
 
-    console.log(this.state.posts.length);
+    const posts = this.state.posts.map(post => (
+      <Post
+        key={post.get('_id')}
+        id={post.get('_id')}
+        post={post}
+        editPost={this.handleEditPostForm}
+        deletePost={this.handleDeletePost}
+      />
+    )).toJS();
 
-    const posts = this.state.posts.length > 0 ?
-    (
-      this.state.posts
-    ) :
-    (
-      <div>
-        No hay posts
-      </div>
-    );
+    console.log(this.state.posts.size);
+
+    // const posts = this.state.posts.length > 0 ?
+    // (
+    //   this.state.posts
+    // ) :
+    // (
+    //   <div>
+    //     No hay posts
+    //   </div>
+    // );
 
     return (
       <div>
