@@ -38,9 +38,8 @@ class PostForm extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { post } = nextProps;
-    if (!isNil(post)) {
-      this.setState({ postState: post });
-    }
+    console.log(post);
+    this.setState({ postState: post || PostForm.postState() });
     // this.setState({ postState: nextProps.post || PostForm.postState() }),
   }
 
@@ -55,16 +54,30 @@ class PostForm extends Component {
   };
 
   handleEditPost = () => {
-    const { post, editPost } = this.props;
-    editPost(post);
+    const { editPost } = this.props;
+    console.log(this.state.postState);
+    this.setState(
+      {
+          postState: PostForm.postState(),
+      },
+      () => editPost(this.state.postState),
+    );
+  };
+
+  handleClose = () => {
+    const { closeForm } = this.props;
+    this.setState({ postState: PostForm.postState() });
+    closeForm();
   };
 
   render() {
 
+    console.log(this.state.postState);
+
     const { active, closeForm, post } = this.props;
 
     const actions = [
-      { label: "Cancel", onClick: closeForm },
+      { label: "Cancel", onClick: this.handleClose },
       {
         label: isNil(post) ? "Create" : "Update",
         onClick: isNil(post) ? this.handleCreatePost : this.handleEditPost,
@@ -75,8 +88,8 @@ class PostForm extends Component {
           <Dialog
             actions={actions}
             active={active}
-            onEscKeyDown={closeForm}
-            onOverlayClick={closeForm}
+            onEscKeyDown={this.handleClose}
+            onOverlayClick={this.handleClose}
             title='My awesome dialog'
           >
             <Input

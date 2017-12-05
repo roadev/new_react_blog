@@ -54,12 +54,17 @@ class Posts extends Component {
       this.state.posts,
     );
     console.log(posts);
-    this.setState({ posts });
+    this.setState({ posts }, () => this.handleCloseForm());
 
   };
 
-  handleEditPostForm = (post) => {
-    this.setState({ showForm: true, postToEdit: post });
+  handleEditPostForm = (id, post) => {
+    this.setState({
+      showForm: true,
+      postToEdit: post
+        .set('id', id)
+        .set('updated_at', Date()),
+    });
   };
 
 
@@ -74,7 +79,7 @@ class Posts extends Component {
   };
 
   handleCloseForm = () => {
-    this.setState({ showForm: false });
+    this.setState({ showForm: false, postToEdit: undefined });
   };
 
   render() {

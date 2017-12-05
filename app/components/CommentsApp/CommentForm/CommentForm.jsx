@@ -5,6 +5,7 @@ import { fromJS } from 'immutable';
 import { isNil } from 'lodash/fp';
 import Input from 'react-toolbox/lib/input';
 import Dialog from 'react-toolbox/lib/dialog';
+import style from './style';
 
 class CommentForm extends Component {
   static propTypes = {
@@ -25,15 +26,17 @@ class CommentForm extends Component {
     commentState : CommentForm.commentState(),
   }
 
-  handleChange = (name, value) => {
-    const commentState =  this.state.commentState.set(name, value);
-    this.setState({commentState});
+  handleChange = (key, value) => {
+    console.log(key, value);
+    this.setState({ [key]: value });
+    const commentState =  this.state.commentState.set(key, value);
+    this.setState({ commentState });
   };
 
 
   handleCreateComment = () => {
     const { createComment } =  this.props;
-    createComment(this.state.commentState.toJs());
+    createComment(this.state.commentState.toJS());
   }
 
   render() {
@@ -53,10 +56,49 @@ class CommentForm extends Component {
           onOverlayClick={closeForm}
           title='My awesome dialog'
         >
-        <Input type='text' label='Name' name='name' value={this.state.commentState.get('name')} onChange={this.handleChange.bind(this, 'name')} />
-        <Input type='email' label='Email' name='email' value={this.state.commentState.get('email')} onChange={this.handleChange.bind(this, 'email')} />
-        <Input type='text' label='Country' name='country' value={this.state.commentState.get('country')} onChange={this.handleChange.bind(this, 'country')} />
-        <Input type='number' label='Age' name='age' value={this.state.commentState.get('age')} onChange={this.handleChange.bind(this, 'age')} />
+          <div className={style.row}>
+            <div className={style.input}>
+              <Input
+                type='text'
+                label='Name'
+                value={this.state.commentState.get('name')}
+                onChange={this.handleChange.bind(this, 'name')}
+              />
+            </div>
+            <div className={style.input}>
+              <Input
+                type='email'
+                label='Email'
+                value={this.state.commentState.get('email')}
+                onChange={this.handleChange.bind(this, 'email')}
+              />
+            </div>
+          </div>
+
+          <div className={style.row}>
+
+            <div className={style.input}>
+              <Input
+                type='text'
+                label='Country'
+                value={this.state.commentState.get('country')}
+                onChange={this.handleChange.bind(this, 'country')}
+              />
+            </div>
+
+            <div className={style.input}>
+              <Input
+                type='number'
+                label='Age'
+                name='age'
+                value={this.state.commentState.get('age')}
+                onChange={this.handleChange.bind(this, 'age')}
+              />
+            </div>
+
+          </div>
+
+
       </Dialog>
     )
   }
