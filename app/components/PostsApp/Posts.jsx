@@ -19,11 +19,9 @@ class Posts extends Component {
   }
 
   async getPosts() {
-    console.log(endpoints.posts);
     const response = await fetch(endpoints.posts);
     const posts = await response.json();
     this.setState({ posts: fromJS(posts) });
-    console.log(posts);
   }
 
   createPost = (post) => {
@@ -35,47 +33,19 @@ class Posts extends Component {
       },
       body: JSON.stringify(post.toJS()),
     });
-    // const postItem = (
-    //   <Post
-    //     key={this.state.postsCount}
-    //     id={this.state.postsCount}
-    //     post={post}
-    //     editPost={this.handleEditPostForm}
-    //     deletePost={this.handleDeletePost}
-    //   />
-    // );
-    // const posts = this.state.posts.concat(postItem);
-    // this.setState({
-    //   posts,
-    //   postsCount: this.state.postsCount + 1,
-    // }, () => this.handleCloseForm());
+    this.handleCloseForm();
   };
 
   handleEditPost = (post) => {
-    console.log("asjhdgajkhdsgj")
-    console.log("entra")
-    const postItem = (
-      <Post
-        key={post.get('id')}
-        id={post.get('id')}
-        post={post}
-        editPost={this.handleEditPostForm}
-        deletePost={this.handleDeletePost}
-      />
-    );
-    console.log(postItem);
-    console.log(post.get('id'));
-    const index = findIndex(
-      p => p.key === `${post.get('id')}`
-    )(this.state.posts)
-    const posts = set(
-      index,
-      postItem,
-      this.state.posts,
-    );
-    console.log(posts);
-    this.setState({ posts }, () => this.handleCloseForm());
-
+    fetch(`${endpoints.posts}/${post.get('id')}`, {
+      method: 'PUT',
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(post.toJS()),
+    });
+    this.handleCloseForm();
   };
 
   handleEditPostForm = (id, post) => {
@@ -89,9 +59,13 @@ class Posts extends Component {
 
 
   handleDeletePost = (id) => {
-    const posts = this.state.posts
-      .filter(p => p.key !== `${id}`);
-    this.setState({ posts });
+    fetch(`${endpoints.posts}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+    });
   }
 
   handleShowForm = () => {
@@ -114,7 +88,6 @@ class Posts extends Component {
       />
     )).toJS();
 
-    console.log(this.state.posts.size);
 
     // const posts = this.state.posts.length > 0 ?
     // (

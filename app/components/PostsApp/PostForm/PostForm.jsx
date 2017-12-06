@@ -38,7 +38,6 @@ class PostForm extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { post } = nextProps;
-    console.log(post);
     this.setState({ postState: post || PostForm.postState() });
     // this.setState({ postState: nextProps.post || PostForm.postState() }),
   }
@@ -55,12 +54,12 @@ class PostForm extends Component {
 
   handleEditPost = () => {
     const { editPost } = this.props;
-    console.log(this.state.postState);
+    const { postState } = this.state;
     this.setState(
       {
           postState: PostForm.postState(),
       },
-      () => editPost(this.state.postState),
+      () => editPost(postState),
     );
   };
 
@@ -72,7 +71,6 @@ class PostForm extends Component {
 
   render() {
 
-    console.log(this.state.postState);
 
     const { active, closeForm, post } = this.props;
 
