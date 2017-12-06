@@ -22,11 +22,11 @@ class Post extends Component {
     buttonIcon: "visibility"
   }
   handleToggleComments = () => {
-    if(this.state.hideComments){
-      this.setState({hideComments:false, buttonIcon:"visibility_off"});
-    }else{
-      this.setState({hideComments:true, buttonIcon:"visibility"});
-    }
+      this.setState({
+        hideComments: !this.state.hideComments,
+        buttonIcon: this.state.hideComments ?
+          "visibility" : "visibility_off",
+      });
   }
   render(){
     const { post, editPost, deletePost, id } = this.props;
@@ -46,7 +46,7 @@ class Post extends Component {
           />
           <IconButton
             icon="edit"
-            onClick={() => editPost(post)}
+            onClick={() => editPost(id, post)}
           />
           <IconButton
             icon="delete"
