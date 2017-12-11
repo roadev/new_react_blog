@@ -25,7 +25,7 @@ class Post extends Component {
       this.setState({
         hideComments: !this.state.hideComments,
         buttonIcon: this.state.hideComments ?
-          "visibility" : "visibility_off",
+          "visibility_off" : "visibility",
       });
   }
   render(){
@@ -50,7 +50,7 @@ class Post extends Component {
           />
           <IconButton
             icon="delete"
-            onClick={() => deletePost(id)}
+            onClick={() => deletePost(id, post)}
           />
         </CardActions>
 

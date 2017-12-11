@@ -5,13 +5,15 @@ import { fromJS, List } from 'immutable';
 import Post from './Post/Post';
 import PostForm from './PostForm/PostForm';
 import { endpoints } from '../../constants';
+import Dialog from 'react-toolbox/lib/dialog';
 
 class Posts extends Component {
 
   state = {
     posts: List(),
     showForm: false,
-    postToEdit: undefined,
+    post: undefined,
+    showDialog: false,
   };
 
   componentDidMount() {
@@ -51,21 +53,18 @@ class Posts extends Component {
   handleEditPostForm = (id, post) => {
     this.setState({
       showForm: true,
-      postToEdit: post
+      post: post
         .set('id', id)
         .set('updated_at', Date()),
     });
   };
 
 
-  handleDeletePost = (id) => {
-    fetch(`${endpoints.posts}/${id}`, {
-      method: 'DELETE',
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-    });
+  handleDeletePost = (id, post) => {
+    this.setState({
+      showDialog: true,
+      post: post.set('id', id)
+    })
   }
 
   handleShowForm = () => {
@@ -73,8 +72,24 @@ class Posts extends Component {
   };
 
   handleCloseForm = () => {
-    this.setState({ showForm: false, postToEdit: undefined });
+    this.setState({ showForm: false, post: undefined });
   };
+
+  handleCloseDialog = () => {
+    this.setState({ showDialog: false, post: undefined })
+  }
+
+  handleConfirmDelete = () => {
+    const {post} = this.state;
+    fetch(`${endpoints.posts}/${post.get('id')}`, {
+      method: 'DELETE',
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+    });
+    this.setState({ showDialog: false });
+  }
 
   render() {
 
@@ -99,6 +114,12 @@ class Posts extends Component {
     //   </div>
     // );
 
+
+    const actions = [
+      { label: "Cancel", onClick: this.handleCloseForm },
+      { label: "Confirm", onClick: this.handleConfirmDelete }
+    ];
+
     return (
       <div>
         {posts}
@@ -107,13 +128,23 @@ class Posts extends Component {
           createPost={this.createPost}
           editPost={this.handleEditPost}
           closeForm={this.handleCloseForm}
-          post={this.state.postToEdit}
+          post={this.state.post}
         />
         <Button
           icon="add"
           label="Create post"
           onClick={this.handleShowForm}
         />
+
+        <Dialog
+         actions={actions}
+         active={this.state.showDialog}
+         onEscKeyDown={this.handleCloseDialog}
+         onOverlayClick={this.handleCloseDialog}
+         title='Confirmación de eliminación'
+       >
+         <p>¿Esta seguro que desea eliminar?</p>
+       </Dialog>
       </div>
     );
   }
