@@ -2,53 +2,60 @@ import React, { Component } from 'react';
 import { Button } from 'react-toolbox/lib/button';
 import { findIndex, set } from 'lodash/fp';
 import { fromJS, List } from 'immutable';
+import Dialog from 'react-toolbox/lib/dialog';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
+
 import Post from './Post/Post';
 import PostForm from './PostForm/PostForm';
 import { endpoints } from '../../constants';
-import Dialog from 'react-toolbox/lib/dialog';
+
 
 class Posts extends Component {
 
+  static propTypes = {
+    fetchPosts: PropTypes.func.isRequired,
+    updatePost: PropTypes.func.isRequired,
+    createPost: PropTypes.func.isRequired,
+    deletePost: PropTypes.func.isRequired,
+    postsData: ImmutablePropTypes.map.isRequired,
+  }
+
   state = {
-    posts: List(),
     showForm: false,
     post: undefined,
     showDialog: false,
   };
 
   componentDidMount() {
-    this.getPosts();
+    const { fetchPosts } = this.props;
+    fetchPosts();
   }
 
-  async getPosts() {
-    const response = await fetch(endpoints.posts);
-    const posts = await response.json();
-    this.setState({ posts: fromJS(posts) });
+  componentWillReceiveProps(nextProps){
+    const { fetchPosts } = this.props;
+    const { postsData } = nextProps;
+    if (!postsData.get('postsLoading') && postsData.get('refresh')){
+      fetchPosts();
+    }
   }
 
   createPost = (post) => {
-    fetch(endpoints.posts, {
-      method: 'POST',
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(post.toJS()),
-    });
-    this.handleCloseForm();
+    const { createPost } = this.props;
+    this.handleCloseForm(() => createPost(post.toJS()));
   };
 
   handleEditPost = (post) => {
-    fetch(`${endpoints.posts}/${post.get('id')}`, {
-      method: 'PUT',
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(post.toJS()),
-    });
-    this.handleCloseForm();
+    const { updatePost } = this.props;
+    this.handleCloseForm(() => updatePost(post.toJS()));
   };
+
+  handleConfirmDelete = () => {
+    const {post} = this.state;
+    const { deletePost } = this.props;
+    deletePost(post.toJS());
+    this.setState({ showDialog: false });
+  }
 
   handleEditPostForm = (id, post) => {
     this.setState({
@@ -79,41 +86,21 @@ class Posts extends Component {
     this.setState({ showDialog: false, post: undefined })
   }
 
-  handleConfirmDelete = () => {
-    const {post} = this.state;
-    fetch(`${endpoints.posts}/${post.get('id')}`, {
-      method: 'DELETE',
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-    });
-    this.setState({ showDialog: false });
-  }
+
 
   render() {
+    const { postsData } = this.props;
+    const posts = postsData.get('posts');
 
-    const posts = this.state.posts.map(post => (
+    const postsItems = posts.map(post => (
       <Post
-        key={post.get('_id')}
-        id={post.get('_id')}
-        post={post}
-        editPost={this.handleEditPostForm}
-        deletePost={this.handleDeletePost}
-      />
+          key={post.get('_id')}
+          id={post.get('_id')}
+          post={post}
+          editPost={this.handleEditPostForm}
+          deletePost={this.handleDeletePost}
+        />
     )).toJS();
-
-
-    // const posts = this.state.posts.length > 0 ?
-    // (
-    //   this.state.posts
-    // ) :
-    // (
-    //   <div>
-    //     No hay posts
-    //   </div>
-    // );
-
 
     const actions = [
       { label: "Cancel", onClick: this.handleCloseForm },
@@ -122,7 +109,7 @@ class Posts extends Component {
 
     return (
       <div>
-        {posts}
+        {postsItems}
         <PostForm
           active={this.state.showForm}
           createPost={this.createPost}
