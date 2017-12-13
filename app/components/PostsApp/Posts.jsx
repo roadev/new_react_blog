@@ -42,12 +42,14 @@ class Posts extends Component {
 
   createPost = (post) => {
     const { createPost } = this.props;
-    this.handleCloseForm(() => createPost(post.toJS()));
+    createPost(post.toJS());
+    this.handleCloseForm();
   };
 
   handleEditPost = (post) => {
     const { updatePost } = this.props;
-    this.handleCloseForm(() => updatePost(post.toJS()));
+    updatePost(post.toJS());
+    this.handleCloseForm();
   };
 
   handleConfirmDelete = () => {

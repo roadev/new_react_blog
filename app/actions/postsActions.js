@@ -28,7 +28,10 @@ export function updatePost(post) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(post),
-    }).then(response => dispatch(togglePostsLoading()))
+    }).then(response => {
+      dispatch(togglePostsLoading());
+      dispatch(refreshPosts());
+    });
   };
 }
 
@@ -37,7 +40,10 @@ export function deletePost(post) {
     dispatch(togglePostsLoading());
     return fetch(`${endpoints.posts}/${post.id}`, {
       method: 'DELETE',
-    }).then(response => dispatch(togglePostsLoading()))
+    }).then(response => {
+      dispatch(togglePostsLoading());
+      dispatch(refreshPosts());
+    });
   };
 }
 
@@ -52,8 +58,7 @@ export function createPost(post) {
     .then(response => {
       dispatch(togglePostsLoading());
       dispatch(refreshPosts());
-
-    }))
+    });
   };
 }
 
