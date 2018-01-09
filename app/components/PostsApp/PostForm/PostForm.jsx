@@ -3,9 +3,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { fromJS } from 'immutable';
-import { isNil } from 'lodash/fp';
+import isNil from 'lodash/fp/isNil';
 import Input from 'react-toolbox/lib/input';
 import Dialog from 'react-toolbox/lib/dialog';
+import style from './style.scss';
 
 class PostForm extends Component {
 
@@ -55,12 +56,12 @@ class PostForm extends Component {
 
   handleEditPost = () => {
     const { editPost } = this.props;
-    console.log(this.state.postState);
+    const { postState } = this.state;
     this.setState(
       {
           postState: PostForm.postState(),
       },
-      () => editPost(this.state.postState),
+      () => editPost(postState),
     );
   };
 
@@ -92,16 +93,22 @@ class PostForm extends Component {
             onOverlayClick={this.handleClose}
             title='My awesome dialog'
           >
-            <Input
-              label="Title"
-              onChange={this.onTitleChange}
-              value={this.state.postState.get('title')}
-            />
-            <Input
-              label="Body"
-              onChange={this.onBodyChange}
-              value={this.state.postState.get('body')}
-            />
+            <div className={style.row}>
+              <div className={style.column}>
+                <Input
+                  label="Title"
+                  onChange={this.onTitleChange}
+                  value={this.state.postState.get('title')}
+                />
+              </div>
+              <div className={style.column}>
+                <Input
+                  label="Body"
+                  onChange={this.onBodyChange}
+                  value={this.state.postState.get('body')}
+                />
+              </div>
+            </div>
           </Dialog>
 
         </div>

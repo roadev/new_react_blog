@@ -4,20 +4,18 @@ import ACTION_TYPES from '../actions/actionTypes';
 
 export const initialState = fromJS({
   posts: [],
-  totalResults: null,
   refresh: false,
   postsLoading: false,
 });
 
 export default function postsData(state = initialState, action) {
+  console.log(state.get('postsLoading'), state.get('posts'));
   switch (action.type) {
     case ACTION_TYPES.RECEIVE_POSTS: {
       console.log(action.posts);
-      const totalResults = action.posts.length;
-      const posts = fromJS(action.posts).sort(p => p._id);
+      const posts = fromJS(action.posts);
       return state.withMutations(map => {
         map.set('posts', posts)
-          .set('totalResults', totalResults)
           .set('refresh', false);
       });
     }

@@ -11,6 +11,9 @@ import { endpoints } from '../../constants';
 class Posts extends Component {
 
   static propTypes = {
+    createPost: PropTypes.func.isRequired,
+    editPost: PropTypes.func.isRequired,
+    deletePost: PropTypes.func.isRequired,
     fetchPosts: PropTypes.func.isRequired,
     postsData: ImmutablePropTypes.map.isRequired,
   };
@@ -64,30 +67,31 @@ class Posts extends Component {
   };
 
   handleEditPost = (post) => {
-    console.log("asjhdgajkhdsgj")
-    console.log("entra")
-    const postItem = (
-      <Post
-        key={post.get('id')}
-        id={post.get('id')}
-        post={post}
-        editPost={this.handleEditPostForm}
-        deletePost={this.handleDeletePost}
-      />
-    );
-    console.log(postItem);
-    console.log(post.get('id'));
-    const index = findIndex(
-      p => p.key === `${post.get('id')}`
-    )(this.state.posts)
-    const posts = set(
-      index,
-      postItem,
-      this.state.posts,
-    );
-    console.log(posts);
-    this.setState({ posts }, () => this.handleCloseForm());
-
+    const { editPost } = this.props;
+    this.setState({ showForm: false }, () => editPost(post.toJS()));
+    // console.log("asjhdgajkhdsgj")
+    // console.log("entra")
+    // const postItem = (
+    //   <Post
+    //     key={post.get('id')}
+    //     id={post.get('id')}
+    //     post={post}
+    //     editPost={this.handleEditPostForm}
+    //     deletePost={this.handleDeletePost}
+    //   />
+    // );
+    // console.log(postItem);
+    // console.log(post.get('id'));
+    // const index = findIndex(
+    //   p => p.key === `${post.get('id')}`
+    // )(this.state.posts)
+    // const posts = set(
+    //   index,
+    //   postItem,
+    //   this.state.posts,
+    // );
+    // console.log(posts);
+    // this.setState({ posts }, () => this.handleCloseForm());
   };
 
   handleEditPostForm = (id, post) => {
@@ -101,9 +105,11 @@ class Posts extends Component {
 
 
   handleDeletePost = (id) => {
-    const posts = this.state.posts
-      .filter(p => p.key !== `${id}`);
-    this.setState({ posts });
+    // const posts = this.state.posts
+    //   .filter(p => p.key !== `${id}`);
+    // this.setState({ posts });
+    const { deletePost } = this.props;
+    deletePost(id);
   }
 
   handleShowForm = () => {
